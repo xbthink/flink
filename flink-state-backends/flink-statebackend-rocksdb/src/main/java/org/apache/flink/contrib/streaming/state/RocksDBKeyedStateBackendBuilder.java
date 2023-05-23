@@ -112,6 +112,7 @@ public class RocksDBKeyedStateBackendBuilder<K> extends AbstractKeyedStateBacken
 
     /** True if incremental checkpointing is enabled. */
     private boolean enableIncrementalCheckpointing;
+    private boolean enableOssIncrementalCheckpointing;
 
     private RocksDBNativeMetricOptions nativeMetricOptions;
     private int numberOfTransferingThreads;
@@ -218,6 +219,12 @@ public class RocksDBKeyedStateBackendBuilder<K> extends AbstractKeyedStateBacken
     RocksDBKeyedStateBackendBuilder<K> setEnableIncrementalCheckpointing(
             boolean enableIncrementalCheckpointing) {
         this.enableIncrementalCheckpointing = enableIncrementalCheckpointing;
+        return this;
+    }
+
+    RocksDBKeyedStateBackendBuilder<K> setEnableOssIncrementalCheckpointing(
+            boolean enableOssIncrementalCheckpointing) {
+        this.enableOssIncrementalCheckpointing = enableOssIncrementalCheckpointing;
         return this;
     }
 
@@ -513,10 +520,20 @@ public class RocksDBKeyedStateBackendBuilder<K> extends AbstractKeyedStateBacken
             long lastCompletedCheckpointId) {
         RocksDBSnapshotStrategyBase<K, ?> checkpointSnapshotStrategy;
         if (enableIncrementalCheckpointing) {
-            RocksDBStateUploader stateUploader =
-                    injectRocksDBStateUploader == null
-                            ? new RocksDBStateUploader(numberOfTransferingThreads)
-                            : injectRocksDBStateUploader;
+
+            RocksDBStateUploader stateUploader;
+            if (enableOssIncrementalCheckpointing) {
+                stateUploader =
+                        injectRocksDBStateUploader == null
+                                ? new RocksDBStateOSSUploader(numberOfTransferingThreads)
+                                : injectRocksDBStateUploader;
+            } else {
+                stateUploader =
+                        injectRocksDBStateUploader == null
+                                ? new RocksDBStateUploader(numberOfTransferingThreads)
+                                : injectRocksDBStateUploader;
+            }
+
             checkpointSnapshotStrategy =
                     new RocksIncrementalSnapshotStrategy<>(
                             db,

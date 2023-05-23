@@ -42,6 +42,7 @@ import org.apache.flink.api.java.functions.KeySelector;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.typeutils.TypeExtractor;
 import org.apache.flink.api.java.typeutils.runtime.TupleSerializer;
+import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.metrics.Counter;
 import org.apache.flink.metrics.MetricGroup;
 import org.apache.flink.runtime.state.DefaultKeyedStateStore;
@@ -537,6 +538,30 @@ public class WindowOperator<K, IN, ACC, OUT, W extends Window>
         if (mergingWindows != null) {
             // need to make sure to update the merging state in state
             mergingWindows.persist();
+        }
+    }
+
+    @Override
+    public void finish() throws Exception {
+        super.finish();
+        ParameterTool parameters = (ParameterTool)
+                getRuntimeContext().getExecutionConfig().getGlobalJobParameters();
+        if (!windowAssigner.isEventTime()) {
+            if (windowAssigner instanceof MergingWindowAssigner) {
+                //TODO
+            } else {
+                internalTimerService.forEachProcessingTimeTimer((window, time) -> {
+                    triggerContext.key = (K) getCurrentKey();
+                    triggerContext.window = window;
+
+                    windowState.setCurrentNamespace(triggerContext.window);
+                    ACC contents = windowState.get();
+                    if (contents != null) {
+                        emitWindowContents(window, contents);
+                    }
+                    clearAllState(triggerContext.window, windowState, null);
+                });
+            }
         }
     }
 

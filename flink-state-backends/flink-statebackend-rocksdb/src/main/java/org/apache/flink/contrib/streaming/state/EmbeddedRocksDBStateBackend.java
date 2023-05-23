@@ -127,6 +127,7 @@ public class EmbeddedRocksDBStateBackend extends AbstractManagedMemoryStateBacke
 
     /** This determines if incremental checkpointing is enabled. */
     private final TernaryBoolean enableIncrementalCheckpointing;
+    private boolean enableOssIncrementalCheckpointing = false;
 
     /** Thread number used to transfer (download and upload) state, default value: 1. */
     private int numberOfTransferThreads;
@@ -202,6 +203,8 @@ public class EmbeddedRocksDBStateBackend extends AbstractManagedMemoryStateBacke
         this.enableIncrementalCheckpointing =
                 original.enableIncrementalCheckpointing.resolveUndefined(
                         config.get(CheckpointingOptions.INCREMENTAL_CHECKPOINTS));
+
+        this.enableOssIncrementalCheckpointing = config.get(CheckpointingOptions.INCREMENTAL_CHECKPOINTS_OSS);
 
         if (original.numberOfTransferThreads == UNDEFINED_NUMBER_OF_TRANSFER_THREADS) {
             this.numberOfTransferThreads = config.get(CHECKPOINT_TRANSFER_THREAD_NUM);
@@ -455,6 +458,7 @@ public class EmbeddedRocksDBStateBackend extends AbstractManagedMemoryStateBacke
                                 keyGroupCompressionDecorator,
                                 cancelStreamRegistry)
                         .setEnableIncrementalCheckpointing(isIncrementalCheckpointsEnabled())
+                        .setEnableOssIncrementalCheckpointing(isOssIncrementalCheckpointsEnabled())
                         .setNumberOfTransferingThreads(getNumberOfTransferThreads())
                         .setNativeMetricOptions(
                                 resourceContainer.getMemoryWatcherOptions(defaultMetricOptions))
@@ -652,6 +656,11 @@ public class EmbeddedRocksDBStateBackend extends AbstractManagedMemoryStateBacke
     public boolean isIncrementalCheckpointsEnabled() {
         return enableIncrementalCheckpointing.getOrDefault(
                 CheckpointingOptions.INCREMENTAL_CHECKPOINTS.defaultValue());
+    }
+
+    /** Gets whether incremental checkpoints are enabled for this state backend. */
+    public boolean isOssIncrementalCheckpointsEnabled() {
+        return enableOssIncrementalCheckpointing;
     }
 
     /**

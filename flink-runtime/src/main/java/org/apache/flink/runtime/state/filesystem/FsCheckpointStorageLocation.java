@@ -149,7 +149,7 @@ public class FsCheckpointStorageLocation extends FsCheckpointStreamFactory
     }
 
     @VisibleForTesting
-    FileSystem getFileSystem() {
+    public FileSystem getFileSystem() {
         return fileSystem;
     }
 }

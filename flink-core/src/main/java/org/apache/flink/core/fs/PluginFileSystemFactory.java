@@ -68,7 +68,7 @@ public class PluginFileSystemFactory implements FileSystemFactory {
         return String.format("Plugin %s", inner.getClass().getName());
     }
 
-    static class ClassLoaderFixingFileSystem extends FileSystem
+    public static class ClassLoaderFixingFileSystem extends FileSystem
             implements WrappingProxy<FileSystem> {
         private final FileSystem inner;
         private final ClassLoader loader;

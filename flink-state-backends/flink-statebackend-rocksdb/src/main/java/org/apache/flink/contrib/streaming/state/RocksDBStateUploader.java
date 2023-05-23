@@ -108,7 +108,7 @@ public class RocksDBStateUploader extends RocksDBStateDataTransfer {
         return futures;
     }
 
-    private StreamStateHandle uploadLocalFileToCheckpointFs(
+    protected StreamStateHandle uploadLocalFileToCheckpointFs(
             Path filePath,
             CheckpointStreamFactory checkpointStreamFactory,
             CloseableRegistry closeableRegistry)
