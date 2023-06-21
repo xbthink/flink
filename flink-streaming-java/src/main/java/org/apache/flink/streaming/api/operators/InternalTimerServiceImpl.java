@@ -291,6 +291,15 @@ public class InternalTimerServiceImpl<K, N> implements InternalTimerService<N> {
         }
     }
 
+    @Override
+    public void drainProcessingTimeTimer(BiConsumerWithException<N, Long, Exception> consumer) throws Exception {
+        InternalTimer<K, N> timer;
+        while ((timer = processingTimeTimersQueue.poll()) != null) {
+            keyContext.setCurrentKey(timer.getKey());
+            consumer.accept(timer.getNamespace(), timer.getTimestamp());
+        }
+    }
+
     public void advanceWatermark(long time) throws Exception {
         currentWatermark = time;
 
