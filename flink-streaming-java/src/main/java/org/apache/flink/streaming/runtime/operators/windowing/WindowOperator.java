@@ -550,7 +550,7 @@ public class WindowOperator<K, IN, ACC, OUT, W extends Window>
             if (windowAssigner instanceof MergingWindowAssigner) {
                 //TODO
             } else {
-                internalTimerService.forEachProcessingTimeTimer((window, time) -> {
+                internalTimerService.drainProcessingTimeTimer((window, time) -> {
                     triggerContext.key = (K) getCurrentKey();
                     triggerContext.window = window;
 
@@ -559,7 +559,10 @@ public class WindowOperator<K, IN, ACC, OUT, W extends Window>
                     if (contents != null) {
                         emitWindowContents(window, contents);
                     }
-                    clearAllState(triggerContext.window, windowState, null);
+
+                    windowState.clear();
+                    processContext.window = window;
+                    processContext.clear();
                 });
             }
         }

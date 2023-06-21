@@ -47,6 +47,8 @@ public interface InternalTimerService<N> {
     /** Deletes the timer for the given key and namespace. */
     void deleteProcessingTimeTimer(N namespace, long time);
 
+    default void drainProcessingTimeTimer(BiConsumerWithException<N, Long, Exception> consumer) throws Exception {};
+
     /**
      * Registers a timer to be fired when event time watermark passes the given time. The namespace
      * you pass here will be provided when the timer fires.
