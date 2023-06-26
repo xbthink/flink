@@ -27,6 +27,9 @@ import org.apache.flink.util.FlinkRuntimeException;
 import org.apache.flink.util.concurrent.FutureUtils;
 import org.apache.flink.util.function.ThrowingRunnable;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
@@ -39,6 +42,7 @@ import java.util.concurrent.ExecutionException;
 
 /** Help class for downloading RocksDB state files. */
 public class RocksDBStateDownloader extends RocksDBStateDataTransfer {
+    private static final Logger LOG = LoggerFactory.getLogger(RocksDBStateDownloader.class);
     public RocksDBStateDownloader(int restoringThreadNum) {
         super(restoringThreadNum);
     }
@@ -130,6 +134,7 @@ public class RocksDBStateDownloader extends RocksDBStateDataTransfer {
             Files.createDirectories(restoreFilePath.getParent());
             outputStream = Files.newOutputStream(restoreFilePath);
             closeableRegistry.registerCloseable(outputStream);
+            LOG.info("download to {}",restoreFilePath);
 
             byte[] buffer = new byte[8 * 1024];
             while (true) {
@@ -148,6 +153,7 @@ public class RocksDBStateDownloader extends RocksDBStateDataTransfer {
             if (closeableRegistry.unregisterCloseable(outputStream)) {
                 outputStream.close();
             }
+            LOG.info("download to {} finished",restoreFilePath);
         }
     }
 }
