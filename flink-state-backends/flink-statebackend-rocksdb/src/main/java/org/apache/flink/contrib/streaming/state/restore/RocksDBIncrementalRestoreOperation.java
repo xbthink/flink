@@ -214,6 +214,7 @@ public class RocksDBIncrementalRestoreOperation<K> implements RocksDBRestoreOper
     private void restoreFromRemoteState(IncrementalRemoteKeyedStateHandle stateHandle)
             throws Exception {
         // used as restore source for IncrementalRemoteKeyedStateHandle
+        logger.info("restoreFromRemoteState");
         final Path tmpRestoreInstancePath =
                 instanceBasePath.getAbsoluteFile().toPath().resolve(UUID.randomUUID().toString());
         try {
@@ -226,6 +227,7 @@ public class RocksDBIncrementalRestoreOperation<K> implements RocksDBRestoreOper
 
     private void restoreFromLocalState(IncrementalLocalKeyedStateHandle localKeyedStateHandle)
             throws Exception {
+        logger.info("restoreFromLocalState");
         KeyedBackendSerializationProxy<K> serializationProxy =
                 readMetaData(localKeyedStateHandle.getMetaDataState());
         List<StateMetaInfoSnapshot> stateMetaInfoSnapshots =
@@ -233,7 +235,7 @@ public class RocksDBIncrementalRestoreOperation<K> implements RocksDBRestoreOper
 
         Path restoreSourcePath = localKeyedStateHandle.getDirectoryStateHandle().getDirectory();
 
-        logger.debug(
+        logger.info(
                 "Restoring keyed backend uid in operator {} from incremental snapshot to {}.",
                 operatorIdentifier,
                 backendUID);
@@ -242,17 +244,20 @@ public class RocksDBIncrementalRestoreOperation<K> implements RocksDBRestoreOper
                 createlumnFamilyDescriptors(stateMetaInfoSnapshots, true),
                 stateMetaInfoSnapshots,
                 restoreSourcePath);
+        logger.info("restoreFromLocalState finished");
     }
 
     private IncrementalLocalKeyedStateHandle transferRemoteStateToLocalDirectory(
             Path temporaryRestoreInstancePath, IncrementalRemoteKeyedStateHandle restoreStateHandle)
             throws Exception {
 
+        logger.info("transferRemoteStateToLocalDirectory");
         try (RocksDBStateDownloader rocksDBStateDownloader =
                 new RocksDBStateDownloader(numberOfTransferringThreads)) {
             rocksDBStateDownloader.transferAllStateDataToDirectory(
                     restoreStateHandle, temporaryRestoreInstancePath, cancelStreamRegistry);
         }
+        logger.info("transferRemoteStateToLocalDirectory finished");
 
         // since we transferred all remote state to a local directory, we can use the same code as
         // for
