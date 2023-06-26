@@ -335,7 +335,10 @@ public class KubernetesUtils {
             Map<String, ExternalResource> externalResources,
             Map<String, String> externalResourceConfigKeys) {
         final Quantity cpuQuantity = new Quantity(String.valueOf(cpu));
-        final Quantity cpuLimitQuantity = new Quantity(String.valueOf(cpu * cpuLimitFactor));
+        Quantity cpuLimitQuantity = null;
+        if (cpuLimitFactor != -1) {
+            cpuLimitQuantity = new Quantity(String.valueOf(cpu * cpuLimitFactor));
+        }
         final Quantity memQuantity = new Quantity(mem + Constants.RESOURCE_UNIT_MB);
         final Quantity memQuantityLimit =
                 new Quantity(((int) (mem * memoryLimitFactor)) + Constants.RESOURCE_UNIT_MB);
