@@ -42,7 +42,6 @@ import org.apache.flink.api.java.functions.KeySelector;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.typeutils.TypeExtractor;
 import org.apache.flink.api.java.typeutils.runtime.TupleSerializer;
-import org.apache.flink.api.java.utils.ParameterTool;
 import org.apache.flink.metrics.Counter;
 import org.apache.flink.metrics.MetricGroup;
 import org.apache.flink.runtime.state.DefaultKeyedStateStore;
@@ -535,8 +534,6 @@ public class WindowOperator<K, IN, ACC, OUT, W extends Window>
     @Override
     public void finish() throws Exception {
         super.finish();
-        ParameterTool parameters = (ParameterTool)
-                getRuntimeContext().getExecutionConfig().getGlobalJobParameters();
         if (!windowAssigner.isEventTime()) {
             if (windowAssigner instanceof MergingWindowAssigner) {
                 //TODO
