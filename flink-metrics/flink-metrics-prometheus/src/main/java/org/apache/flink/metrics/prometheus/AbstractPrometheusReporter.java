@@ -75,7 +75,7 @@ public abstract class AbstractPrometheusReporter implements MetricReporter {
 
     private CharacterFilter labelValueCharactersFilter = CHARACTER_FILTER;
 
-    @VisibleForTesting final CollectorRegistry registry = new CollectorRegistry(true);
+    @VisibleForTesting final CollectorRegistry registry = CollectorRegistry.defaultRegistry;
 
     @Override
     public void open(MetricConfig config) {
