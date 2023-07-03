@@ -135,10 +135,10 @@ public class KubernetesTaskManagerParameters extends AbstractKubernetesParameter
     public double getTaskManagerCPULimitFactor() {
         final double limitFactor =
                 flinkConfig.getDouble(KubernetesConfigOptions.TASK_MANAGER_CPU_LIMIT_FACTOR);
-        checkArgument(
-                limitFactor >= 1,
-                "%s should be greater or equal to 1.",
-                KubernetesConfigOptions.TASK_MANAGER_CPU_LIMIT_FACTOR.key());
+//        checkArgument(
+//                limitFactor >= 1,
+//                "%s should be greater or equal to 1.",
+//                KubernetesConfigOptions.TASK_MANAGER_CPU_LIMIT_FACTOR.key());
         return limitFactor;
     }
 
