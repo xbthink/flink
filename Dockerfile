@@ -1,10 +1,4 @@
 FROM flink:1.17.1-scala_2.12-java8
-ENV FLINK_HOME=/opt/flink
-WORKDIR $FLINK_HOME
-COPY flink-dist/target/flink-1.17.1-bin/flink-1.17.1/lib/flink-dist-1.17.1.jar $FLINK_HOME/lib/flink-dist-1.17.1.jar
-COPY flink-dist/target/flink-1.17.1-bin/flink-1.17.1/lib/simpleclient-0.8.1.jar $FLINK_HOME/lib/simpleclient-0.8.1.jar
-RUN chown -R flink:flink .
-
 RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
  && echo 'Asia/Shanghai' >/etc/timezone
 
@@ -18,3 +12,9 @@ COPY ./hadoop/  /opt/hadoop/
 
 ENV HADOOP_USER_NAME=dw
 ENV HADOOP_CLASSPATH=/opt/hadoop/lib/*
+
+ENV FLINK_HOME=/opt/flink
+WORKDIR $FLINK_HOME
+COPY flink-dist/target/flink-1.17.1-bin/flink-1.17.1/lib/simpleclient-0.8.1.jar $FLINK_HOME/lib/simpleclient-0.8.1.jar
+COPY flink-dist/target/flink-1.17.1-bin/flink-1.17.1/lib/flink-dist-1.17.1.jar $FLINK_HOME/lib/flink-dist-1.17.1.jar
+RUN chown -R flink:flink .
