@@ -291,6 +291,13 @@ under the License.
 		</dependency>
 
 		<dependency>
+			<groupId>io.prometheus</groupId>
+			<artifactId>simpleclient</artifactId>
+			<version>0.8.1</version>
+			<scope>compile</scope>
+		</dependency>
+
+		<dependency>
 			<groupId>org.apache.flink</groupId>
 			<artifactId>flink-metrics-prometheus</artifactId>
 			<version>${project.version}</version>
