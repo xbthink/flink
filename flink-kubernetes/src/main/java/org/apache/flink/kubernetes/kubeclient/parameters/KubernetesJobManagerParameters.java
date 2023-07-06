@@ -128,10 +128,10 @@ public class KubernetesJobManagerParameters extends AbstractKubernetesParameters
     public double getJobManagerCPULimitFactor() {
         final double limitFactor =
                 flinkConfig.getDouble(KubernetesConfigOptions.JOB_MANAGER_CPU_LIMIT_FACTOR);
-        checkArgument(
-                limitFactor >= 1,
-                "%s should be greater or equal to 1.",
-                KubernetesConfigOptions.JOB_MANAGER_CPU_LIMIT_FACTOR.key());
+//        checkArgument(
+//                limitFactor >= 1,
+//                "%s should be greater or equal to 1.",
+//                KubernetesConfigOptions.JOB_MANAGER_CPU_LIMIT_FACTOR.key());
         return limitFactor;
     }
 
