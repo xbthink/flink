@@ -538,6 +538,7 @@ public class WindowOperator<K, IN, ACC, OUT, W extends Window>
             if (windowAssigner instanceof MergingWindowAssigner) {
                 //TODO
             } else {
+                LOG.info("WindowOperator finish() start");
                 internalTimerService.drainProcessingTimeTimer((window, time) -> {
                     triggerContext.key = (K) getCurrentKey();
                     triggerContext.window = window;
@@ -552,6 +553,7 @@ public class WindowOperator<K, IN, ACC, OUT, W extends Window>
                     processContext.window = window;
                     processContext.clear();
                 });
+                LOG.info("WindowOperator finish() end");
             }
         }
     }
