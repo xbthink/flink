@@ -21,6 +21,7 @@ package org.apache.flink.streaming.runtime.tasks;
 import org.apache.flink.annotation.Internal;
 import org.apache.flink.api.connector.source.ExternallyInducedSourceReader;
 import org.apache.flink.api.connector.source.SourceReader;
+import org.apache.flink.metrics.Counter;
 import org.apache.flink.runtime.checkpoint.CheckpointMetaData;
 import org.apache.flink.runtime.checkpoint.CheckpointOptions;
 import org.apache.flink.runtime.checkpoint.SavepointType;
@@ -127,6 +128,12 @@ public class SourceOperatorStreamTask<T> extends StreamTask<T, SourceOperator<T,
                 .gauge(
                         MetricNames.CHECKPOINT_START_DELAY_TIME,
                         this::getAsyncCheckpointStartDelayNanos);
+
+        Counter numRecordsIn = setupNumRecordsInCounter(mainOperator);
+        getEnvironment()
+                .getMetricGroup()
+                .getIOMetricGroup()
+                .reuseRecordsInputCounter(numRecordsIn);
     }
 
     @Override
