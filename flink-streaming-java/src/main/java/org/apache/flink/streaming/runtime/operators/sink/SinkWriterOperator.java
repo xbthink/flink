@@ -133,7 +133,9 @@ class SinkWriterOperator<InputT, CommT> extends AbstractStreamOperator<Committab
     public void initializeState(StateInitializationContext context) throws Exception {
         super.initializeState(context);
         OptionalLong checkpointId = context.getRestoredCheckpointId();
-        lastCompletedCheckpointId = checkpointId.getAsLong();
+        if (context.isRestored()) {
+            lastCompletedCheckpointId = checkpointId.getAsLong();
+        }
         InitContext initContext =
                 createInitContext(checkpointId.isPresent() ? checkpointId.getAsLong() : null);
         if (context.isRestored()) {
