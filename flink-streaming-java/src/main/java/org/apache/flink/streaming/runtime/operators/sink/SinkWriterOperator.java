@@ -103,6 +103,8 @@ class SinkWriterOperator<InputT, CommT> extends AbstractStreamOperator<Committab
 
     private boolean endOfInput = false;
 
+    private long lastCompletedCheckpointId = -1;
+
     SinkWriterOperator(
             Sink<InputT> sink,
             ProcessingTimeService processingTimeService,
@@ -131,6 +133,7 @@ class SinkWriterOperator<InputT, CommT> extends AbstractStreamOperator<Committab
     public void initializeState(StateInitializationContext context) throws Exception {
         super.initializeState(context);
         OptionalLong checkpointId = context.getRestoredCheckpointId();
+        lastCompletedCheckpointId = checkpointId.getAsLong();
         InitContext initContext =
                 createInitContext(checkpointId.isPresent() ? checkpointId.getAsLong() : null);
         if (context.isRestored()) {
@@ -150,6 +153,12 @@ class SinkWriterOperator<InputT, CommT> extends AbstractStreamOperator<Committab
     public void snapshotState(StateSnapshotContext context) throws Exception {
         super.snapshotState(context);
         writerStateHandler.snapshotState(context.getCheckpointId());
+    }
+
+    @Override
+    public void notifyCheckpointComplete(long checkpointId) throws Exception {
+        super.notifyCheckpointComplete(checkpointId);
+        lastCompletedCheckpointId = Math.max(lastCompletedCheckpointId, checkpointId);
     }
 
     @Override
@@ -180,7 +189,7 @@ class SinkWriterOperator<InputT, CommT> extends AbstractStreamOperator<Committab
     public void endInput() throws Exception {
         endOfInput = true;
         sinkWriter.flush(true);
-        emitCommittables(Long.MAX_VALUE);
+        emitCommittables(++lastCompletedCheckpointId);
     }
 
     private void emitCommittables(Long checkpointId) throws IOException, InterruptedException {

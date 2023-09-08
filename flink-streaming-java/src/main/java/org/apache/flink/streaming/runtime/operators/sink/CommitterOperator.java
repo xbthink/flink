@@ -147,6 +147,7 @@ class CommitterOperator<CommT> extends AbstractStreamOperator<CommittableMessage
         } else {
             lastCompletedCheckpointId = Math.max(lastCompletedCheckpointId, checkpointId);
         }
+        LOG.debug("CommitterOperator lastCompletedCheckpointId", lastCompletedCheckpointId);
         commitAndEmitCheckpoints();
     }
 
